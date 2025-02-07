@@ -53,7 +53,7 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <!-- Update with your main class's fully qualified name -->
-                                    <mainClass>com.example.inventory.InventoryManagementSystem</mainClass>
+                                    <mainClass>com.example.Main</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

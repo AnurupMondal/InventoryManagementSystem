@@ -1,15 +1,20 @@
-package com.example.inventory;
+package com.example;
+
+import com.example.inventory.Inventory;
+import com.example.inventory.SampleDataPopulator;
+import com.example.inventory.Product;
+import com.example.inventory.Electronics;  // For adding products manually (if needed)
+import com.example.billing.Bill;
+import com.example.billing.BillingService;
 
 import java.util.Scanner;
 
-public class InventoryManagementSystem {
+public class Main {
 
     public static void main(String[] args) {
         Inventory inventory = new Inventory();
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
-
-        // Flag to ensure the sample data option is offered only once.
         boolean sampleDataLoaded = false;
 
         while (!exit) {
@@ -22,9 +27,11 @@ public class InventoryManagementSystem {
             System.out.println("5. Search Product");
             if (!sampleDataLoaded) {
                 System.out.println("6. Populate Sample Data");
-                System.out.println("7. Exit");
+                System.out.println("7. Create Bill");
+                System.out.println("8. Exit");
             } else {
-                System.out.println("6. Exit");
+                System.out.println("6. Create Bill");
+                System.out.println("7. Exit");
             }
             System.out.print("Enter your choice: ");
 
@@ -33,13 +40,11 @@ public class InventoryManagementSystem {
 
             try {
                 if (!sampleDataLoaded) {
-                    // When sample data has not been loaded, the valid choices are 1-7.
                     switch (choice) {
                         case 1:
                             inventory.displayInventory();
                             break;
                         case 2:
-                            // For simplicity, add a new Electronics product.
                             System.out.print("Enter product ID: ");
                             String productId = scanner.nextLine();
                             System.out.print("Enter product name: ");
@@ -49,7 +54,7 @@ public class InventoryManagementSystem {
                             System.out.print("Enter quantity: ");
                             int quantity = scanner.nextInt();
                             scanner.nextLine(); // consume newline
-                            // Assume product is Electronics with a default warranty of 12 months.
+                            // For demonstration, add an Electronics product with a default warranty.
                             inventory.addProduct(new Electronics(productId, name, price, quantity, 12));
                             break;
                         case 3:
@@ -72,9 +77,63 @@ public class InventoryManagementSystem {
                             product.displayProductInfo();
                             break;
                         case 6:
-                            // Populate sample data.
+                            // Populate sample data and mark as loaded.
                             SampleDataPopulator.populateSampleProducts(inventory);
                             sampleDataLoaded = true;
+                            break;
+                        case 7:
+                            // Create bill option (only available after sample data is loaded).
+                            Bill bill = BillingService.createBill(inventory);
+                            bill.printBill();
+                            break;
+                        case 8:
+                            exit = true;
+                            System.out.println("Exiting Inventory Management System.");
+                            break;
+                        default:
+                            System.out.println("Invalid choice. Please try again.");
+                    }
+                } else {
+                    // Menu when sample data has already been loaded.
+                    switch (choice) {
+                        case 1:
+                            inventory.displayInventory();
+                            break;
+                        case 2:
+                            System.out.print("Enter product ID: ");
+                            String productId = scanner.nextLine();
+                            System.out.print("Enter product name: ");
+                            String name = scanner.nextLine();
+                            System.out.print("Enter price: ");
+                            double price = scanner.nextDouble();
+                            System.out.print("Enter quantity: ");
+                            int quantity = scanner.nextInt();
+                            scanner.nextLine(); // consume newline
+                            inventory.addProduct(new Electronics(productId, name, price, quantity, 12));
+                            break;
+                        case 3:
+                            System.out.print("Enter product ID to remove: ");
+                            String removeId = scanner.nextLine();
+                            inventory.removeProduct(removeId);
+                            break;
+                        case 4:
+                            System.out.print("Enter product ID to update: ");
+                            String updateId = scanner.nextLine();
+                            System.out.print("Enter new quantity: ");
+                            int newQuantity = scanner.nextInt();
+                            scanner.nextLine(); // consume newline
+                            inventory.updateProductQuantity(updateId, newQuantity);
+                            break;
+                        case 5:
+                            System.out.print("Enter product name to search: ");
+                            String searchName = scanner.nextLine();
+                            Product product = inventory.searchProduct(searchName);
+                            product.displayProductInfo();
+                            break;
+                        case 6:
+                            // Create bill option.
+                            Bill bill = BillingService.createBill(inventory);
+                            bill.printBill();
                             break;
                         case 7:
                             exit = true;
@@ -83,53 +142,8 @@ public class InventoryManagementSystem {
                         default:
                             System.out.println("Invalid choice. Please try again.");
                     }
-                } else {
-                    // When sample data has already been loaded, valid choices are 1-6.
-                    switch (choice) {
-                        case 1:
-                            inventory.displayInventory();
-                            break;
-                        case 2:
-                            System.out.print("Enter product ID: ");
-                            String productId = scanner.nextLine();
-                            System.out.print("Enter product name: ");
-                            String name = scanner.nextLine();
-                            System.out.print("Enter price: ");
-                            double price = scanner.nextDouble();
-                            System.out.print("Enter quantity: ");
-                            int quantity = scanner.nextInt();
-                            scanner.nextLine(); // consume newline
-                            inventory.addProduct(new Electronics(productId, name, price, quantity, 12));
-                            break;
-                        case 3:
-                            System.out.print("Enter product ID to remove: ");
-                            String removeId = scanner.nextLine();
-                            inventory.removeProduct(removeId);
-                            break;
-                        case 4:
-                            System.out.print("Enter product ID to update: ");
-                            String updateId = scanner.nextLine();
-                            System.out.print("Enter new quantity: ");
-                            int newQuantity = scanner.nextInt();
-                            scanner.nextLine(); // consume newline
-                            inventory.updateProductQuantity(updateId, newQuantity);
-                            break;
-                        case 5:
-                            System.out.print("Enter product name to search: ");
-                            String searchName = scanner.nextLine();
-                            Product product = inventory.searchProduct(searchName);
-                            product.displayProductInfo();
-                            break;
-                        case 6:
-                            exit = true;
-                            System.out.println("Exiting Inventory Management System.");
-                            break;
-                        default:
-                            System.out.println("Invalid choice. Please try again.");
-                    }
                 }
             } catch (Exception e) {
-                // Simple exception handling: print the error message and continue.
                 System.out.println("Error: " + e.getMessage());
             }
         }
