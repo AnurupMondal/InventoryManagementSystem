@@ -1,5 +1,7 @@
 package com.example.inventory;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +43,11 @@ public class Inventory {
         } else {
             throw new Exception("Product with ID " + productId + " not found.");
         }
+    }
+
+    public List<Product> getProducts() {
+        // Return an unmodifiable view of the product list to prevent external changes.
+        return Collections.unmodifiableList(products);
     }
 
     // Display all products in the inventory
