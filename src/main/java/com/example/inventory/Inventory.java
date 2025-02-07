@@ -56,4 +56,12 @@ public class Inventory {
                 .findFirst()
                 .orElseThrow(() -> new Exception("Product with name " + name + " not found."));
     }
+
+    // Search for a product by productId
+    public Product searchProductById(String productId) throws Exception {
+        return products.stream()
+                .filter(p -> p.getProductId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new Exception("Product with ID " + productId + " not found."));
+    }
 }
