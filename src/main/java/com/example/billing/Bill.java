@@ -17,11 +17,15 @@ public class Bill {
         this.customerName = customerName;
     }
 
+    // Add the getter for customerName
+    public String getCustomerName() {
+        return customerName;
+    }
+
     public void addItem(BillItem item) {
         items.add(item);
     }
 
-    // New method added to allow access to the list of bill items.
     public List<BillItem> getItems() {
         return items;
     }
