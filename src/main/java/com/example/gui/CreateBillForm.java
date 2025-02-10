@@ -18,6 +18,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.transactions.TransactionManager; // Ensure this is available
+
 public class CreateBillForm extends JDialog {
     private Inventory inventory;
     private Bill createdBill;
@@ -89,6 +91,7 @@ public class CreateBillForm extends JDialog {
         addPanel.add(addToBillBtn);
         leftPanel.add(addPanel, BorderLayout.SOUTH);
 
+        // Update addToBillBtn ActionListener:
         addToBillBtn.addActionListener(e -> {
             int selectedRow = availableTable.getSelectedRow();
             if (selectedRow == -1) {
@@ -105,11 +108,35 @@ public class CreateBillForm extends JDialog {
                 JOptionPane.showMessageDialog(this, "Selected quantity exceeds available stock.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            // Add item to bill list
-            BillItem item = new BillItem(prodId, name, price, qtyToAdd);
-            billItems.add(item);
-            Object[] rowData = {prodId, name, price, qtyToAdd, item.getTotalPrice()};
-            selectedTableModel.addRow(rowData);
+
+            // Check if the product is already in the billItems list.
+            boolean found = false;
+            for (int i = 0; i < billItems.size(); i++) {
+                BillItem existingItem = billItems.get(i);
+                if (existingItem.getProductId().equals(prodId)) {
+                    // Update the quantity in the BillItem.
+                    int updatedQty = existingItem.getQuantity() + qtyToAdd;
+                    existingItem.setQuantity(updatedQty);  // Ensure this recalculates total price
+                    // Update the corresponding row in the selectedTableModel.
+                    for (int row = 0; row < selectedTableModel.getRowCount(); row++) {
+                        String rowProdId = (String) selectedTableModel.getValueAt(row, 0);
+                        if (rowProdId.equals(prodId)) {
+                            selectedTableModel.setValueAt(updatedQty, row, 3);
+                            selectedTableModel.setValueAt(price * updatedQty, row, 4);
+                            break;
+                        }
+                    }
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                // Create a new BillItem since it doesn't already exist.
+                BillItem item = new BillItem(prodId, name, price, qtyToAdd);
+                billItems.add(item);
+                Object[] rowData = {prodId, name, price, qtyToAdd, item.getTotalPrice()};
+                selectedTableModel.addRow(rowData);
+            }
             // Update available quantity in the left table (without updating underlying inventory yet)
             availableTableModel.setValueAt(availableQty - qtyToAdd, modelRow, 3);
         });
@@ -238,7 +265,7 @@ public class CreateBillForm extends JDialog {
 
         // ----- Header Panel -----
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(45, 45, 45)); // Dark background
+        headerPanel.setBackground(new Color(45, 45, 45));
         headerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JLabel titleLabel = new JLabel("INVOICE", SwingConstants.CENTER);
@@ -265,7 +292,6 @@ public class CreateBillForm extends JDialog {
         billTable.setFillsViewportHeight(true);
         billTable.setRowHeight(25);
         billTable.getTableHeader().setReorderingAllowed(false);
-        // Populate table with bill items
         for (BillItem item : bill.getItems()) {
             Object[] row = {item.getProductId(), item.getProductName(), item.getUnitPrice(), item.getQuantity(), item.getTotalPrice()};
             billTableModel.addRow(row);
@@ -292,10 +318,8 @@ public class CreateBillForm extends JDialog {
         buttonPanel.add(closeBtn);
         invoiceDialog.add(buttonPanel, BorderLayout.PAGE_END);
 
-        // ----- Button Actions -----
         printBtn.addActionListener(e -> {
             try {
-                // Print the bill table
                 boolean complete = billTable.print();
                 if (complete) {
                     JOptionPane.showMessageDialog(invoiceDialog, "Printing Complete", "Printer", JOptionPane.INFORMATION_MESSAGE);
