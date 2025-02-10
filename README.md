@@ -50,7 +50,7 @@ The **Inventory Management System** is a Java-based application designed to effi
    ```
 4. Run the application:
    ```sh
-   java -jar inventory-management-system-1.0-SNAPSHOT.jar
+   java -jar inventory-management-system-<version-name>.jar
    ```
 
 ## Usage
