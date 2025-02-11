@@ -6,8 +6,8 @@ import java.util.List;
 public class AuthenticationManager {
     private static List<Employee> employees = new ArrayList<>();
 
-    // Pre-load with one admin and a couple of employees
     static {
+        // Preload with an admin and two employees (passwords in plain text for demonstration only)
         employees.add(new Employee("EMP001", "admin", "admin123", Role.ADMIN, true, true, true));
         employees.add(new Employee("EMP002", "john", "password", Role.EMPLOYEE, true, false, true));
         employees.add(new Employee("EMP003", "jane", "password", Role.EMPLOYEE, false, false, true));
@@ -22,12 +22,21 @@ public class AuthenticationManager {
         return null;
     }
 
-    public static void addEmployee(Employee employee) {
-        employees.add(employee);
-        // Optionally, log this operation via TransactionManager
-    }
-
     public static List<Employee> getEmployees() {
         return employees;
+    }
+
+    // New method to update an existing employee.
+    public static void updateEmployee(Employee updatedEmp) {
+        for (int i = 0; i < employees.size(); i++) {
+            if (employees.get(i).getEmployeeId().equals(updatedEmp.getEmployeeId())) {
+                employees.set(i, updatedEmp);
+                return;
+            }
+        }
+    }
+
+    public static void addEmployee(Employee employee) {
+        employees.add(employee);
     }
 }

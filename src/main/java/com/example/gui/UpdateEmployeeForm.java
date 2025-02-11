@@ -1,6 +1,8 @@
 package com.example.gui;
 
 import com.example.auth.Employee;
+import com.example.auth.AuthenticationManager;
+import com.example.auth.Role;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -28,18 +30,21 @@ public class UpdateEmployeeForm extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        // Employee ID (read-only)
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(new JLabel("Employee ID:"), gbc);
         gbc.gridx = 1;
         panel.add(new JLabel(employee.getEmployeeId()), gbc);
 
+        // Username (read-only)
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(new JLabel("Username:"), gbc);
         gbc.gridx = 1;
         panel.add(new JLabel(employee.getUsername()), gbc);
 
+        // Can Add Products
         gbc.gridx = 0;
         gbc.gridy = 2;
         panel.add(new JLabel("Can Add Products:"), gbc);
@@ -48,6 +53,7 @@ public class UpdateEmployeeForm extends JDialog {
         addCheck.setSelected(employee.isCanAddProducts());
         panel.add(addCheck, gbc);
 
+        // Can Remove Products
         gbc.gridx = 0;
         gbc.gridy = 3;
         panel.add(new JLabel("Can Remove Products:"), gbc);
@@ -56,6 +62,7 @@ public class UpdateEmployeeForm extends JDialog {
         removeCheck.setSelected(employee.isCanRemoveProducts());
         panel.add(removeCheck, gbc);
 
+        // Can Update Products
         gbc.gridx = 0;
         gbc.gridy = 4;
         panel.add(new JLabel("Can Update Products:"), gbc);
@@ -64,6 +71,7 @@ public class UpdateEmployeeForm extends JDialog {
         updateCheck.setSelected(employee.isCanUpdateProducts());
         panel.add(updateCheck, gbc);
 
+        // Button Panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton saveBtn = new JButton("Save");
         JButton cancelBtn = new JButton("Cancel");
@@ -75,9 +83,8 @@ public class UpdateEmployeeForm extends JDialog {
         panel.add(buttonPanel, gbc);
 
         saveBtn.addActionListener(e -> {
-            // If Employee class has setters, you would update its fields here.
-            // For this example, we'll assume you can update the employee's access in place.
-            employee = new Employee(
+            // Create an updated employee object using the new permission values.
+            Employee updatedEmp = new Employee(
                     employee.getEmployeeId(),
                     employee.getUsername(),
                     employee.getPassword(),
@@ -86,6 +93,8 @@ public class UpdateEmployeeForm extends JDialog {
                     removeCheck.isSelected(),
                     updateCheck.isSelected()
             );
+            // Update the employee record in AuthenticationManager.
+            AuthenticationManager.updateEmployee(updatedEmp);
             JOptionPane.showMessageDialog(this, "Employee permissions updated.");
             dispose();
         });
