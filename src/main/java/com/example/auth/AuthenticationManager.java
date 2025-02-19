@@ -2,15 +2,21 @@ package com.example.auth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
 
 public class AuthenticationManager {
     private static List<Employee> employees = new ArrayList<>();
+    private static final String EMPLOYEE_DATA_FILE = "employees.dat";
 
     static {
+        loadEmployees();
         // Preload with an admin and two employees (passwords in plain text for demonstration only)
-        employees.add(new Employee("EMP001", "admin", "admin123", Role.ADMIN, true, true, true));
-        employees.add(new Employee("EMP002", "john", "password", Role.EMPLOYEE, true, false, true));
-        employees.add(new Employee("EMP003", "jane", "password", Role.EMPLOYEE, false, false, true));
+        if (employees.isEmpty()) {
+            employees.add(new Employee("EMP001", "admin", "admin123", Role.ADMIN, true, true, true));
+            employees.add(new Employee("EMP002", "john", "password", Role.EMPLOYEE, true, false, true));
+            employees.add(new Employee("EMP003", "jane", "password", Role.EMPLOYEE, false, false, true));
+            saveEmployees();
+        }
     }
 
     public static Employee authenticate(String username, String password) {
@@ -31,6 +37,7 @@ public class AuthenticationManager {
         for (int i = 0; i < employees.size(); i++) {
             if (employees.get(i).getEmployeeId().equals(updatedEmp.getEmployeeId())) {
                 employees.set(i, updatedEmp);
+                saveEmployees();
                 return;
             }
         }
@@ -38,5 +45,22 @@ public class AuthenticationManager {
 
     public static void addEmployee(Employee employee) {
         employees.add(employee);
+        saveEmployees();
+    }
+
+    private static void saveEmployees() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(EMPLOYEE_DATA_FILE))) {
+            oos.writeObject(employees);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void loadEmployees() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(EMPLOYEE_DATA_FILE))) {
+            employees = (List<Employee>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
