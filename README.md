@@ -56,7 +56,7 @@ The **Inventory Management System** is a Java-based application designed to effi
 ## Usage
 - **Dashboard:** View stock status and key metrics.
 - **Manage Products:** Add, edit, and delete inventory items.
-- **Manage Employees:** Add, edit, and delete employees (only admins)
+- **Manage Employees:** Add, edit, and delete employees (only admins).
 - **Transactions:** Update stock levels and track movement.
 
 ## Contribution
