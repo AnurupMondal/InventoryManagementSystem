@@ -95,6 +95,7 @@ public class UpdateEmployeeForm extends JDialog {
             );
             // Update the employee record in AuthenticationManager.
             AuthenticationManager.updateEmployee(updatedEmp);
+            AuthenticationManager.saveEmployees();
             JOptionPane.showMessageDialog(this, "Employee permissions updated.");
             dispose();
         });
